@@ -1,5 +1,6 @@
 import maze
 import character
+import sys, pygame
 
 
 class GameManager:
@@ -8,6 +9,29 @@ class GameManager:
         self.mcgyver = character.McGyver(self.maze.findSomething("m"))
         self.guardian = character.Guardian(self.maze.findSomething("g"))
         self.is_playing = True
+
+    def play_g(self):
+        pygame.init()
+        screen = pygame.display.set_mode((720, 720))
+        mcg = pygame.image.load("assets/MacGyver.png")
+        while 1:
+            if self.is_playing:
+                for y in range(0, 720, 48):
+                    for x in range (0, 720, 48):
+                        screen.blit(mcg, (x, y))
+                pygame.display.flip()
+
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT: sys.exit()
+                    if event.type == pygame.KEYDOWN:
+                        if event.key == pygame.K_LEFT:
+                            self.movement((-1, 0))
+                        if event.key == pygame.K_RIGHT:
+                            self.movement((1, 0))
+                        if event.key == pygame.K_UP:
+                            self.movement((0, -1))
+                        if event.key == pygame.K_DOWN:
+                            self.movement((0, 1))
 
     def play_t(self):
         print("\n")
@@ -56,3 +80,8 @@ class GameManager:
             return True
         else:
             return False
+
+    # def draw(self, view, viewpos):
+    #     for y in range(0, 640, 48):
+    #         for x in range (0, 480, 48):
+    #             view.blit("assets/MacGyver.png", (x, y))

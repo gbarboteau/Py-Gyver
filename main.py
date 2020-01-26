@@ -9,7 +9,7 @@ def main():
         print("erreur")
     else:
         if sys.argv[1] == "graphic":
-            print("ok")
+            gm.play_g()
         elif sys.argv[1] == "terminal":
             gm.play_t()
 
