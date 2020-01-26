@@ -2,14 +2,16 @@ import sys
 
 import gamemanager
 
+
 def main():
     gm = gamemanager.GameManager("level.txt")
-    if(len(sys.argv)  < 2):
+    if len(sys.argv) < 2:
         print("erreur")
     else:
-        if(sys.argv[1] == "graphic"):
+        if sys.argv[1] == "graphic":
             print("ok")
-        elif(sys.argv[1] == "terminal"):
-            gm.playT()
+        elif sys.argv[1] == "terminal":
+            gm.play_t()
+
 
 main()

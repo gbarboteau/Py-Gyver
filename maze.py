@@ -1,5 +1,6 @@
 import string
 
+
 class Maze:
     def __init__(self, path):
         self.level = self.createLevel(path)
@@ -38,3 +39,4 @@ class Maze:
         targetPosition = (currentPosition[0] + direction[0], currentPosition[1] + direction[1])
         print(targetPosition)
         return self.checkSomething(targetPosition, "x")
+        
