@@ -6,19 +6,27 @@ import sys, pygame
 class GameManager:
     def __init__(self, path):
         self.maze = maze.Maze(path)
-        self.mcgyver = character.McGyver(self.maze.findSomething("m"))
-        self.guardian = character.Guardian(self.maze.findSomething("g"))
+        self.mcgyver = character.McGyver(self.maze.findSomething("m"), "assets/MacGyver.png")
+        self.guardian = character.Guardian(self.maze.findSomething("g"), "assets/Guardian.png")
         self.is_playing = True
 
     def play_g(self):
         pygame.init()
         screen = pygame.display.set_mode((720, 720))
+        images = {"m" : "assets/MacGyver.png", "g" : "assets/Guardian.png", "e" : "assets/Ether.png", "n" : "assets/Needle.jpg", "t" : "assets/Tube.png",}
         mcg = pygame.image.load("assets/MacGyver.png")
+        wall = pygame.image.load("assets/Wall.png")
+        floor = pygame.image.load("assets/Floor.png")
         while 1:
             if self.is_playing:
-                for y in range(0, 720, 48):
-                    for x in range (0, 720, 48):
-                        screen.blit(mcg, (x, y))
+                for y in range(0, 15):
+                    for x in range (0, 15):
+                        if self.maze.level[y][x] == "x":
+                            screen.blit(wall, (x*48, y*48))
+                        else:
+                            screen.blit(floor, (x*48, y*48))
+                            if self.maze.level[y][x] != " ":
+                                screen.blit(pygame.image.load(images.get(self.maze.level[y][x])), (x*48, y*48))       
                 pygame.display.flip()
 
                 for event in pygame.event.get():
