@@ -1,40 +1,42 @@
+import sys
+import pygame
+
 import maze
 import character
-import sys, pygame
 
 
 class GameManager:
     def __init__(self, path):
         self.maze = maze.Maze(path)
-        self.mcgyver = character.McGyver(self.maze.findSomething("m"), "assets/MacGyver.png")
-        self.guardian = character.Guardian(self.maze.findSomething("g"), "assets/Guardian.png")
+        self.mcgyver = character.McGyver(self.maze.find_something("m"), "assets/MacGyver.png")
+        self.guardian = character.Guardian(self.maze.find_something("g"), "assets/Guardian.png")
         self.is_playing = True
 
     def play_g(self):
         pygame.init()
         screen = pygame.display.set_mode((720, 720))
         images = {"m" : "assets/MacGyver.png", "g" : "assets/Guardian.png", "e" : "assets/Ether.png", "n" : "assets/Needle.jpg", "t" : "assets/Tube.png",}
-        mcg = pygame.image.load("assets/MacGyver.png")
         wall = pygame.image.load("assets/Wall.png")
         floor = pygame.image.load("assets/Floor.png")
         font = pygame.font.SysFont("comicsansms", 30)
-        endString = " "
-        endText = font.render(endString, True, (0, 0, 255))
-        quitText = font.render("Press ESC to quit", True, (0, 0, 255))
+        end_string = " "
+        end_text = font.render(end_string, True, (0, 0, 255))
+        quit_text = font.render("Press ESC to quit", True, (0, 0, 255))
 
         while 1:
-            for y in range(0, 15):
-                for x in range (0, 15):
-                    if self.maze.level[y][x] == "x":
-                        screen.blit(wall, (x*48, y*48))
+            for _y in range(0, 15):
+                for _x in range(0, 15):
+                    if self.maze.level[_y][_x] == "x":
+                        screen.blit(wall, (_x*48, _y*48))
                     else:
-                        screen.blit(floor, (x*48, y*48))
-                        if self.maze.level[y][x] != " ":
-                            screen.blit(pygame.image.load(images.get(self.maze.level[y][x])), (x*48, y*48)) 
+                        screen.blit(floor, (_x*48, _y*48))
+                        if self.maze.level[_y][_x] != " ":
+                            screen.blit(pygame.image.load(images.get(self.maze.level[_y][_x])), (_x*48, _y*48))
 
             if self.is_playing:
                 for event in pygame.event.get():
-                    if event.type == pygame.QUIT: sys.exit()
+                    if event.type == pygame.QUIT:
+                        sys.exit()
                     if event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_ESCAPE:
                             sys.exit()
@@ -47,26 +49,24 @@ class GameManager:
                         if event.key == pygame.K_DOWN:
                             self.movement((0, 1))
             else:
-                if(self.hasWon()):
-                    endString = "You won!"
+                if self.has_won():
+                    end_string = "You won!"
                 else:
-                    endString = "You lose! You forgot to pick up something..."
+                    end_string = "You lose! You forgot to pick up something..."
                 for event in pygame.event.get():
                     if event.key == pygame.K_ESCAPE:
                         sys.exit()
+                end_text = font.render(end_string, True, (0, 0, 255))
+                screen.blit(end_text, (100, 360))
+                screen.blit(quit_text, (100, 410))
 
-                endText = font.render(endString, True, (0, 0, 255))
-                
-                screen.blit(endText, (100, 360))
-                screen.blit(quitText, (100, 410))
-
-            itemLeftText = font.render(str(len(self.maze.itemList)) + " item left", True, (0, 0, 255))
-            screen.blit(itemLeftText, (0, 0))
+            item_left_text = font.render(str(len(self.maze.item_list)) + " item left", True, (0, 0, 255))
+            screen.blit(item_left_text, (0, 0))
             pygame.display.flip()
 
     def play_t(self):
         print("\n")
-        self.maze.printLevel()
+        self.maze.print_level()
         user_input = input("\nEnter a direction to move, Q to quit\n")
         while user_input.lower() != "q":
             if self.is_playing:
@@ -79,40 +79,32 @@ class GameManager:
                     self.movement((0, -1))
                 if user_input.lower() == "down":
                     self.movement((0, 1))
-                self.maze.printLevel()
+                self.maze.print_level()
                 print("\nYour current position is " + str(self.mcgyver.position))
-                print("You have " + str(len(self.mcgyver.inventory)) +" item, " + str(len(self.maze.itemList)) + " item remaining\n")
+                print("You have " + str(len(self.mcgyver.inventory)) +" item, " + str(len(self.maze.item_list)) + " item remaining\n")
                 user_input = input("Enter a direction to move, Q to quit\n")
             else:
-                if(self.hasWon()):
+                if self.has_won():
                     print("You won! That's amazing!\n")
                 else:
                     print("You lose! You forgot to pick up something, try again.\n")
                 user_input = input("Thank you for playing, Q to quit\n")
 
     def movement(self, direction):
-        targetPosition = (self.mcgyver.position[0] + direction[0], self.mcgyver.position[1] + direction[1])
+        target_position = (self.mcgyver.position[0] + direction[0], self.mcgyver.position[1] + direction[1])
         previous_position = self.mcgyver.position
-        print(targetPosition)
-        if self.maze.isThereWalls(self.mcgyver.position, direction):
+        print(target_position)
+        if self.maze.is_there_walls(self.mcgyver.position, direction):
             print("You can't move, there's a wall!")
         else:
-            if self.maze.checkSomething(targetPosition, " ") == False and self.maze.checkSomething(targetPosition, "x") == False:
-                if self.maze.checkSomething(targetPosition, "g"):
+            if not self.maze.check_something(target_position, " ") and not self.maze.check_something(target_position, "x"):
+                if self.maze.check_something(target_position, "g"):
                     self.is_playing = False
                 else:
-                    self.mcgyver.inventory.append(self.maze.pickItem(targetPosition))
+                    self.mcgyver.inventory.append(self.maze.pick_item(target_position))
             self.mcgyver.move(direction)
-            self.maze.updateLevel(previous_position, self.mcgyver.position)
+            self.maze.update_level(previous_position, self.mcgyver.position)
 
-    def hasWon(self):
+    def has_won(self):
         self.is_playing = False
-        if len(self.maze.itemList) <= 0:
-            return True
-        else:
-            return False
-
-    # def draw(self, view, viewpos):
-    #     for y in range(0, 640, 48):
-    #         for x in range (0, 480, 48):
-    #             view.blit("assets/MacGyver.png", (x, y))
+        return len(self.maze.item_list) <= 0
