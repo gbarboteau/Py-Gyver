@@ -45,9 +45,9 @@ class Maze:
 
     def update_level(self, previous_mg_position, current_mg_position):
         """Update the level map when the player moves."""
-        _px, _py, _cx, _cy = previous_mg_position[0], previous_mg_position[1], current_mg_position[0], current_mg_position[1]
-        self.level[_py][_px] = " "
-        self.level[_cy][_cx] = "m"
+        pos_x, pos_y, cur_pos_x, cur_pos_y = previous_mg_position[0], previous_mg_position[1], current_mg_position[0], current_mg_position[1]
+        self.level[pos_y][pos_x] = " "
+        self.level[cur_pos_y][cur_pos_x] = "m"
 
     def pick_item(self, item_position):
         """Let the player pick an item"""
