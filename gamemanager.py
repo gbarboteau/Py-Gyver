@@ -1,21 +1,35 @@
+"""Allow the creation of an instance of GameManager"""
 import sys
 import pygame
 
 import maze
-import character
+import entity
 
 
 class GameManager:
+    """An instance of gamemanager.py handles evrything
+    happening in the game. It controls the map,
+    the player, the win/lose conditions, and the
+    closing of the program.
+    """
     def __init__(self, path):
+        """Creates an instance of GameManager, which contains
+        instances of Maze, McGyver and the guardian.
+        """
         self.maze = maze.Maze(path)
-        self.mcgyver = character.McGyver(self.maze.find_something("m"), "assets/MacGyver.png")
-        self.guardian = character.Guardian(self.maze.find_something("g"), "assets/Guardian.png")
+        self.mcgyver = entity.McGyver(self.maze.find_something("m"), "McGyver", "assets/MacGyver.png")
+        self.guardian = entity.Entity(self.maze.find_something("g"), "Guardian", "assets/Guardian.png")
         self.is_playing = True
 
     def play_g(self):
+        """Launches only if the game uses the graphic mode.
+        Handles the inputs and the graphic display.
+        """
         pygame.init()
         screen = pygame.display.set_mode((720, 720))
-        images = {"m" : "assets/MacGyver.png", "g" : "assets/Guardian.png", "e" : "assets/Ether.png", "n" : "assets/Needle.jpg", "t" : "assets/Tube.png",}
+        images = {}
+        for i in entity.ENTITIES:
+            images[i.char] = i.sprite
         wall = pygame.image.load("assets/Wall.png")
         floor = pygame.image.load("assets/Floor.png")
         font = pygame.font.SysFont("comicsansms", 30)
@@ -24,14 +38,14 @@ class GameManager:
         quit_text = font.render("Press ESC to quit", True, (0, 0, 255))
 
         while 1:
-            for _y in range(0, 15):
-                for _x in range(0, 15):
-                    if self.maze.level[_y][_x] == "x":
-                        screen.blit(wall, (_x*48, _y*48))
+            for y in range(0, 15):
+                for x in range(0, 15):
+                    if self.maze.level[y][x] == "x":
+                        screen.blit(wall, (x*48, y*48))
                     else:
-                        screen.blit(floor, (_x*48, _y*48))
-                        if self.maze.level[_y][_x] != " ":
-                            screen.blit(pygame.image.load(images.get(self.maze.level[_y][_x])), (_x*48, _y*48))
+                        screen.blit(floor, (x*48, y*48))
+                        if self.maze.level[y][x] != " ":
+                            screen.blit(pygame.image.load(images.get(self.maze.level[y][x])), (x*48, y*48))
 
             if self.is_playing:
                 for event in pygame.event.get():
@@ -65,6 +79,9 @@ class GameManager:
             pygame.display.flip()
 
     def play_t(self):
+        """Launches only if the game uses the terminal mode.
+        Handles the inputs and the information display.
+        """
         print("\n")
         self.maze.print_level()
         user_input = input("\nEnter a direction to move, Q to quit\n")
@@ -91,6 +108,10 @@ class GameManager:
                 user_input = input("Thank you for playing, Q to quit\n")
 
     def movement(self, direction):
+        """Handles player movement:
+        if there isn't a wall, the player is allowed to
+        move. Otherwise, noting happens.
+        """
         target_position = (self.mcgyver.position[0] + direction[0], self.mcgyver.position[1] + direction[1])
         previous_position = self.mcgyver.position
         print(target_position)
@@ -106,5 +127,9 @@ class GameManager:
             self.maze.update_level(previous_position, self.mcgyver.position)
 
     def has_won(self):
+        """Is called when the player touches the guardian.
+        Returns True if every item has been collected,
+        False otherwise.
+        """
         self.is_playing = False
         return len(self.maze.item_list) <= 0
