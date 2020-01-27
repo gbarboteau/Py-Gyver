@@ -17,21 +17,27 @@ class GameManager:
         mcg = pygame.image.load("assets/MacGyver.png")
         wall = pygame.image.load("assets/Wall.png")
         floor = pygame.image.load("assets/Floor.png")
-        while 1:
-            if self.is_playing:
-                for y in range(0, 15):
-                    for x in range (0, 15):
-                        if self.maze.level[y][x] == "x":
-                            screen.blit(wall, (x*48, y*48))
-                        else:
-                            screen.blit(floor, (x*48, y*48))
-                            if self.maze.level[y][x] != " ":
-                                screen.blit(pygame.image.load(images.get(self.maze.level[y][x])), (x*48, y*48))       
-                pygame.display.flip()
+        font = pygame.font.SysFont("comicsansms", 30)
+        endString = " "
+        endText = font.render(endString, True, (0, 0, 255))
+        quitText = font.render("Press ESC to quit", True, (0, 0, 255))
 
+        while 1:
+            for y in range(0, 15):
+                for x in range (0, 15):
+                    if self.maze.level[y][x] == "x":
+                        screen.blit(wall, (x*48, y*48))
+                    else:
+                        screen.blit(floor, (x*48, y*48))
+                        if self.maze.level[y][x] != " ":
+                            screen.blit(pygame.image.load(images.get(self.maze.level[y][x])), (x*48, y*48)) 
+
+            if self.is_playing:
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT: sys.exit()
                     if event.type == pygame.KEYDOWN:
+                        if event.key == pygame.K_ESCAPE:
+                            sys.exit()
                         if event.key == pygame.K_LEFT:
                             self.movement((-1, 0))
                         if event.key == pygame.K_RIGHT:
@@ -40,6 +46,23 @@ class GameManager:
                             self.movement((0, -1))
                         if event.key == pygame.K_DOWN:
                             self.movement((0, 1))
+            else:
+                if(self.hasWon()):
+                    endString = "You won!"
+                else:
+                    endString = "You lose! You forgot to pick up something..."
+                for event in pygame.event.get():
+                    if event.key == pygame.K_ESCAPE:
+                        sys.exit()
+
+                endText = font.render(endString, True, (0, 0, 255))
+                
+                screen.blit(endText, (100, 360))
+                screen.blit(quitText, (100, 410))
+
+            itemLeftText = font.render(str(len(self.maze.itemList)) + " item left", True, (0, 0, 255))
+            screen.blit(itemLeftText, (0, 0))
+            pygame.display.flip()
 
     def play_t(self):
         print("\n")
