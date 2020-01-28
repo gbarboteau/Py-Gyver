@@ -19,9 +19,9 @@ class Entity:
         the terminal map (the first character of its
         name), a sprite for the graphic map/
         """
-        self.x = position[0]
-        self.y = position[1]
-        self.position = (self.x, self.y)
+        # self.x = position[0]
+        # self.y = position[1]
+        self.position = position
         self.name = name
         self.char = name[0].lower()
         self.sprite = sprite
@@ -52,6 +52,6 @@ class McGyver(Entity):
     def move(self, direction):
         """Moves the player entity in its new position."""
         self.position = self.position[0] + direction[0], self.position[1] + direction[1]
-        self.x = self.position[0]
-        self.y = self.position[1]
+        # self.x = self.position[0]
+        # self.y = self.position[1]
         

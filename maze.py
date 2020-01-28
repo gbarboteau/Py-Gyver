@@ -54,9 +54,12 @@ class Maze:
         for i in self.item_list:
             if i.position == item_position:
                 name_to_return = i.name
-                i.remove_itself()
-                self.item_list.remove(i)
+                self.destroy_item(i)
                 return name_to_return
+
+    def destroy_item(self, item):
+        self.item_list.remove(item)
+        item.remove_itself()
 
     def find_something(self, char):
         """Find the position of a certain entity."""

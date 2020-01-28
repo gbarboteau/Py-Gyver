@@ -54,6 +54,16 @@ class GameManager:
         self.is_playing = False
         return len(self.maze.item_list) <= 0
 
+    def restart(self):
+        """Is called when the player wants to
+        restarts the game.
+        """
+        self.maze = maze.Maze("assets/level.txt")
+        self.mcgyver = entity.McGyver(self.maze.find_something("m"), "McGyver", "assets/MacGyver.png")
+        self.guardian = entity.Entity(self.maze.find_something("g"), "Guardian", "assets/Guardian.png")
+        self.is_playing = True
+
+
 
 class GameManagerGraphic(GameManager):
     """Launches only if the game is played in
@@ -95,6 +105,8 @@ class GameManagerGraphic(GameManager):
                             self.movement((0, -1))
                         if event.key == pygame.K_DOWN:
                             self.movement((0, 1))
+                        if event.key == pygame.K_r:
+                            self.restart()
             else:
                 if self.has_won(): 
                     self.end_text = self.font.render("You won!", True, (0, 0, 255))
@@ -103,6 +115,8 @@ class GameManagerGraphic(GameManager):
                 for event in pygame.event.get():
                     if event.key == pygame.K_ESCAPE:
                         sys.exit()
+                    elif event.key == pygame.K_r:
+                        self.restart()
             self.draw(self.screen)
 
     def draw(self, surface):
@@ -155,6 +169,8 @@ class GameManagerTerminal(GameManager):
                     self.movement((0, -1))
                 if user_input.lower() == "down":
                     self.movement((0, 1))
+                if user_input.lower() == "r":
+                    self.restart()
                 self.maze.print_level()
                 print("\nYour current position is " + str(self.mcgyver.position))
                 print("You have " + str(len(self.mcgyver.inventory)) +" item, " + str(len(self.maze.item_list)) + " item remaining\n")
