@@ -34,6 +34,7 @@ class Entity:
         """
         ENTITIES.remove(self)
 
+
 class McGyver(Entity):
     """McGyver is our player class,a special entity:
     it inherits every traits of the Entity class,

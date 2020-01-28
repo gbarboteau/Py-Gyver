@@ -13,16 +13,17 @@ def main():
     GameManager, and checks with version of the game
     to launch.
     """
-    gm = gamemanager.GameManager("level.txt")
     if len(sys.argv) < 2:
-        gm.play_g()
+        gm = gamemanager.GameManagerGraphic("level.txt")
     else:
         if sys.argv[1] == "graphic":
-            gm.play_g()
+            gm = gamemanager.GameManagerGraphic("level.txt")
         elif sys.argv[1] == "terminal":
-            gm.play_t()
+            gm = gamemanager.GameManagerTerminal("level.txt")
         else:
-            print("Error: unknown mode")
+            print("Error: unknown mode. Mode set automatically to 'graphic'")
+            gm = gamemanager.GameManagerGraphic("level.txt")
+    gm.play()
 
 
 main()
