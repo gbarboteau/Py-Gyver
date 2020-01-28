@@ -14,15 +14,15 @@ def main():
     to launch.
     """
     if len(sys.argv) < 2:
-        gm = gamemanager.GameManagerGraphic("level.txt")
+        gm = gamemanager.GameManagerGraphic("assets/level.txt")
     else:
         if sys.argv[1] == "graphic":
-            gm = gamemanager.GameManagerGraphic("level.txt")
+            gm = gamemanager.GameManagerGraphic("assets/level.txt")
         elif sys.argv[1] == "terminal":
-            gm = gamemanager.GameManagerTerminal("level.txt")
+            gm = gamemanager.GameManagerTerminal("assets/level.txt")
         else:
             print("Error: unknown mode. Mode set automatically to 'graphic'")
-            gm = gamemanager.GameManagerGraphic("level.txt")
+            gm = gamemanager.GameManagerGraphic("assets/level.txt")
     gm.play()
 
 
