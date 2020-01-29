@@ -194,4 +194,4 @@ class GameManagerTerminal(GameManager):
                     print("You won! That's amazing!\n")
                 else:
                     print("You lose! You forgot to pick up something, try again.\n")
-            user_input = input("Enter a direction to move, Q to quit\n")
+            user_input = input("Enter a direction to move (up/down/left/right), Q to quit, R to restart\n")
