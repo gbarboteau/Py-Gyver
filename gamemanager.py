@@ -23,10 +23,12 @@ class GameManager:
         The constructor remains the same for the terminal
         game manager.
         """
+        self.entities = []
         self.maze = maze.Maze(path)
         self.mcgyver = entity.McGyver(self.maze.find_something("m"), "McGyver", "assets/MacGyver.png")
         self.guardian = entity.Entity(self.maze.find_something("g"), "Guardian", "assets/Guardian.png")
         self.is_playing = True
+        self.__make_entities_list()
 
     def movement(self, direction):
         """Handles player movement:
@@ -42,7 +44,11 @@ class GameManager:
                 if self.maze.check_something(target_position, "g"):
                     self.is_playing = False
                 else:
-                    self.mcgyver.inventory.append(self.maze.pick_item(target_position))
+                    item = self.maze.pick_item(target_position)
+                    for i in self.entities:
+                        if i.name == item:
+                            self.entities.remove(i)
+                    self.mcgyver.inventory.append(item)
             self.mcgyver.move(direction)
             self.maze.update_level(previous_position, self.mcgyver.position)
 
@@ -63,6 +69,14 @@ class GameManager:
         self.guardian = entity.Entity(self.maze.find_something("g"), "Guardian", "assets/Guardian.png")
         self.is_playing = True
 
+    def __make_entities_list(self):
+        """Creates a list of every entities in
+        the game at the start.
+        """
+        self.entities.append(self.mcgyver)
+        self.entities.append(self.guardian)
+        for i in self.maze.item_list:
+            self.entities.append(i)
 
 
 class GameManagerGraphic(GameManager):
@@ -74,16 +88,17 @@ class GameManagerGraphic(GameManager):
         wasn't the case for its parent class.
         """
         super().__init__(path)
-        pygame.init() #Pygame needs to be init if we want to use its fonctionalities
+        pygame.init()  # Pygame needs to be init if we want to use its fonctionalities
         self.screen = pygame.display.set_mode((720, 720))
         self.images = {}
-        for i in entity.ENTITIES:
+        for i in self.entities:
             self.images[i.char] = i.sprite
         self.wall = pygame.image.load("assets/Wall.png")
         self.floor = pygame.image.load("assets/Floor.png")
         self.font = pygame.font.SysFont("comicsansms", 30)
         self.end_text = self.font.render(" ", True, (0, 0, 255))
         self.quit_text = self.font.render("Press ESC to quit", True, (0, 0, 255))
+        self.clock = pygame.time.Clock()
 
     def play(self):
         """Handles game logic and player inputs when
@@ -108,7 +123,7 @@ class GameManagerGraphic(GameManager):
                         if event.key == pygame.K_r:
                             self.restart()
             else:
-                if self.has_won(): 
+                if self.has_won():
                     self.end_text = self.font.render("You won!", True, (0, 0, 255))
                 else:
                     self.end_text = self.font.render("You lose! You forgot to pick up something...", True, (0, 0, 255))
@@ -117,9 +132,9 @@ class GameManagerGraphic(GameManager):
                         sys.exit()
                     elif event.key == pygame.K_r:
                         self.restart()
-            self.draw(self.screen)
+            self._draw(self.screen)
 
-    def draw(self, surface):
+    def _draw(self, surface):
         """Handles the display of the game.
         Is called at the end of play(), when
         every action have been taken into
@@ -141,6 +156,7 @@ class GameManagerGraphic(GameManager):
         item_left_text = self.font.render(str(len(self.maze.item_list)) + " item left", True, (0, 0, 255))
         surface.blit(item_left_text, (0, 0))
         pygame.display.flip()
+        self.clock.tick(30)
 
 
 class GameManagerTerminal(GameManager):
@@ -156,8 +172,7 @@ class GameManagerTerminal(GameManager):
         the terminal.
         """
         print("\n")
-        self.maze.print_level()
-        user_input = input("\nEnter a direction to move, Q to quit\n")
+        user_input = ""
         while user_input.lower() != "q":
             if self.is_playing:
                 print("\n")
@@ -173,11 +188,10 @@ class GameManagerTerminal(GameManager):
                     self.restart()
                 self.maze.print_level()
                 print("\nYour current position is " + str(self.mcgyver.position))
-                print("You have " + str(len(self.mcgyver.inventory)) +" item, " + str(len(self.maze.item_list)) + " item remaining\n")
-                user_input = input("Enter a direction to move, Q to quit\n")
+                print("You have " + str(len(self.mcgyver.inventory)) + " item, " + str(len(self.maze.item_list)) + " item remaining\n")
             else:
                 if self.has_won():
                     print("You won! That's amazing!\n")
                 else:
                     print("You lose! You forgot to pick up something, try again.\n")
-                user_input = input("Thank you for playing, Q to quit\n")
+            user_input = input("Enter a direction to move, Q to quit\n")

@@ -1,7 +1,7 @@
 """Handles the Maze instance."""
 import random
 
-import entity
+from entity import Entity
 
 
 class Maze:
@@ -10,12 +10,12 @@ class Maze:
         (using ASCII characters), and a list of items
         (= entities) in the level.
         """
-        self.level = self.create_level(path)
-        self.item_list = [entity.Entity((0, 0), "Needle", "assets/Needle.jpg"), entity.Entity((0, 0), "Tube", "assets/Tube.png"), entity.Entity((0, 0), "Ether", "assets/Ether.png")]
+        self.level = self.__create_level(path)
+        self.item_list = [Entity((0, 0), "Needle", "assets/Needle.jpg"), Entity((0, 0), "Tube", "assets/Tube.png"), Entity((0, 0), "Ether", "assets/Ether.png")]
         for i in self.item_list:
             i.position = self.set_item_position(i.char)
 
-    def create_level(self, path):
+    def __create_level(self, path):
         """Read an external text file, and creates a level
         based on it.
         """
@@ -34,14 +34,17 @@ class Maze:
 
     def set_item_position(self, char):
         """Right after their creation, gives a random
-        position to every item on the map.
+        position to every item on the map among a list
+        of empty space.
         """
-        new_position = (random.randrange(15), random.randrange(15))
-        if self.is_there_walls(new_position, (0, 0)):
-            return self.set_item_position(char)
-        else:
-            self.level[new_position[1]][new_position[0]] = char
-            return new_position
+        empty_spaces = []
+        for y in range(0, len(self.level)):
+            for x in range(0, len(self.level[y])):
+                if self.check_something((x, y), " "):
+                    empty_spaces.append((x, y))
+        new_position = random.choice(empty_spaces)
+        self.level[new_position[1]][new_position[0]] = char
+        return new_position
 
     def update_level(self, previous_mg_position, current_mg_position):
         """Update the level map when the player moves."""
@@ -54,16 +57,13 @@ class Maze:
         for i in self.item_list:
             if i.position == item_position:
                 name_to_return = i.name
-                self.destroy_item(i)
+                self.item_list.remove(i)
+                # i.remove_itself()
                 return name_to_return
-
-    def destroy_item(self, item):
-        self.item_list.remove(item)
-        item.remove_itself()
 
     def find_something(self, char):
         """Find the position of a certain entity."""
-        for x in range(len(self.level) -1):
+        for x in range(len(self.level) - 1):
             if char in self.level[x]:
                 return(self.level[x].index(char), x)
 
@@ -75,4 +75,3 @@ class Maze:
         """Check for walls at a position related to the player"""
         target_position = (current_position[0] + direction[0], current_position[1] + direction[1])
         return self.check_something(target_position, "x")
-        
