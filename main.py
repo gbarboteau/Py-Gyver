@@ -17,15 +17,12 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("-t", "--terminal", help="Launches the game in terminal mode", action="store_true")
     args = parser.parse_args()
-    parser.add_argument("echo", help="echo the string you use here")
-    args = parser.parse_args()
-    # print(args.echo)
 
-    # if args.terminal:
-    #     gm = GameManagerTerminal("assets/level.txt")
-    # else:
-    #     gm = GameManagerGraphic("assets/level.txt")
-    # gm.play()
+    if args.terminal:
+        gm = GameManagerTerminal("assets/level.txt")
+    else:
+        gm = GameManagerGraphic("assets/level.txt")
+    gm.play()
 
 
 main()
